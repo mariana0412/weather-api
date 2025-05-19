@@ -1,5 +1,5 @@
 const express    = require('express');
-const Subscription = require('../models/Subscription');
+const SubscriptionRoutes = require('../models/Subscription');
 const { v4: uuidv4 } = require('uuid');
 const nodemailer = require('nodemailer');
 const router     = express.Router();
@@ -23,13 +23,13 @@ router.post('/subscribe/', async (req, res) => {
     }
 
     try {
-        const exists = await Subscription.findOne({ email });
+        const exists = await SubscriptionRoutes.findOne({ email });
         if (exists) {
             return res.status(409).json({ error: 'Email already subscribed' });
         }
 
         const token = uuidv4();
-        const sub = new Subscription({ email, city, frequency, token });
+        const sub = new SubscriptionRoutes({ email, city, frequency, token });
         await sub.save();
 
         const confirmUrl = `http://localhost:3000/confirm/${token}`;
@@ -41,7 +41,7 @@ router.post('/subscribe/', async (req, res) => {
         };
         const info = await transporter.sendMail(message);
 
-        return res.json({ message: 'Subscription successful. Confirmation email sent.' });
+        return res.json({ message: 'SubscriptionRoutes successful. Confirmation email sent.' });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'Internal server error' });
@@ -55,17 +55,17 @@ router.get('/confirm/:token', async (req, res) => {
     }
 
     try {
-        const sub = await Subscription.findOne({ token });
+        const sub = await SubscriptionRoutes.findOne({ token });
         if (!sub) {
             return res.status(404).json({ error: 'Token not found' });
         }
         if (sub.confirmed) {
-            return res.json({ message: 'Subscription already confirmed' });
+            return res.json({ message: 'SubscriptionRoutes already confirmed' });
         }
 
         sub.confirmed = true;
         await sub.save();
-        return res.json({ message: 'Subscription confirmed successfully' });
+        return res.json({ message: 'SubscriptionRoutes confirmed successfully' });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'Internal server error' });
@@ -79,11 +79,11 @@ router.get('/unsubscribe/:token', async (req, res) => {
     }
 
     try {
-        const sub = await Subscription.findOne({ token });
+        const sub = await SubscriptionRoutes.findOne({ token });
         if (!sub) {
             return res.status(404).json({ error: 'Token not found' });
         }
-        await Subscription.deleteOne({ token });
+        await SubscriptionRoutes.deleteOne({ token });
         return res.json({ message: 'Unsubscribed successfully' });
     } catch (err) {
         console.error(err);

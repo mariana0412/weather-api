@@ -1,8 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('./config/db');
-const weatherRoutes = require('./routes/weather');
-const subscriptionRoutes = require('./routes/subscription');
+const weatherRoutes = require('./routes/weatherRoutes');
+const subscriptionRoutes = require('./routes/subscriptionRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
