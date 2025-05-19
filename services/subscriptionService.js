@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4, validate: uuidValidate } = require('uuid');
 const repo = require('../repositories/subscriptionRepository');
 const mailer = require('../config/mailer');
 
@@ -29,8 +29,9 @@ async function subscribe({ email, city, frequency }) {
 }
 
 async function confirmSubscription(token) {
-    if (!token)
+    if (!token || !uuidValidate(token)) {
         throw { status: 400, message: 'Invalid token' };
+    }
 
     const subscription = await repo.findByToken(token);
     if (!subscription)
@@ -42,8 +43,9 @@ async function confirmSubscription(token) {
 }
 
 async function unsubscribe(token) {
-    if (!token)
+    if (!token || !uuidValidate(token)) {
         throw { status: 400, message: 'Invalid token' };
+    }
 
     const sub = await repo.findByToken(token);
     if (!sub)
