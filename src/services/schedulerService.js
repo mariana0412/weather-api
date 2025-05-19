@@ -1,6 +1,6 @@
 const cron = require('node-cron')
 const repo = require('../repositories/subscriptionRepository')
-const weatherService = require('../services/weatherService')
+const weatherService = require('./weatherService')
 const mailer = require('../config/mailer')
 
 function scheduleWeatherUpdates(frequency, schedule) {
