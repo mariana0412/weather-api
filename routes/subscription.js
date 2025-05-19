@@ -12,7 +12,6 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-
 router.post('/subscribe/', async (req, res) => {
     const { email, city, frequency } = req.body;
 
@@ -67,6 +66,25 @@ router.get('/confirm/:token', async (req, res) => {
         sub.confirmed = true;
         await sub.save();
         return res.json({ message: 'Subscription confirmed successfully' });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.get('/unsubscribe/:token', async (req, res) => {
+    const { token } = req.params;
+    if (!token) {
+        return res.status(400).json({ error: 'Invalid token' });
+    }
+
+    try {
+        const sub = await Subscription.findOne({ token });
+        if (!sub) {
+            return res.status(404).json({ error: 'Token not found' });
+        }
+        await Subscription.deleteOne({ token });
+        return res.json({ message: 'Unsubscribed successfully' });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'Internal server error' });
