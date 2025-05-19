@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('./config/db');
+require('./services/schedulerService');
 const weatherRoutes = require('./routes/weatherRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
 
