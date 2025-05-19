@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/weather', weatherRoutes);
-app.use('/subscribe', subscriptionRoutes);
+app.use('/', subscriptionRoutes);
 
 app.get('/', (req, res) => {
     res.send('API is up and running');

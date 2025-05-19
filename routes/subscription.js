@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 });
 
 
-router.post('/', async (req, res) => {
+router.post('/subscribe/', async (req, res) => {
     const { email, city, frequency } = req.body;
 
     if (!email || !city || !frequency) {
@@ -43,6 +43,30 @@ router.post('/', async (req, res) => {
         const info = await transporter.sendMail(message);
 
         return res.json({ message: 'Subscription successful. Confirmation email sent.' });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.get('/confirm/:token', async (req, res) => {
+    const { token } = req.params;
+    if (!token) {
+        return res.status(400).json({ error: 'Invalid token' });
+    }
+
+    try {
+        const sub = await Subscription.findOne({ token });
+        if (!sub) {
+            return res.status(404).json({ error: 'Token not found' });
+        }
+        if (sub.confirmed) {
+            return res.json({ message: 'Subscription already confirmed' });
+        }
+
+        sub.confirmed = true;
+        await sub.save();
+        return res.json({ message: 'Subscription confirmed successfully' });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'Internal server error' });
