@@ -3,16 +3,14 @@ const repo = require('../repositories/subscriptionRepository');
 const mailer = require('../config/mailer');
 
 async function subscribe({ email, city, frequency }) {
-    if (!email || !city || !frequency) {
+    if (!email || !city || !frequency)
         throw { status: 400, message: 'Email, city and frequency are required' };
-    }
-    if (!['hourly', 'daily'].includes(frequency)) {
-        throw { status: 400, message: 'Frequency must be hourly or daily' };
-    }
 
-    if (await repo.findByEmail(email)) {
+    if (!['hourly', 'daily'].includes(frequency))
+        throw { status: 400, message: 'Frequency must be hourly or daily' };
+
+    if (await repo.findByEmail(email))
         throw { status: 409, message: 'Email already subscribed' };
-    }
 
     const token = uuidv4();
     const subscription = await repo.create({ email, city, frequency, token });
@@ -29,13 +27,7 @@ async function subscribe({ email, city, frequency }) {
 }
 
 async function confirmSubscription(token) {
-    if (!token || !uuidValidate(token)) {
-        throw { status: 400, message: 'Invalid token' };
-    }
-
-    const subscription = await repo.findByToken(token);
-    if (!subscription)
-        throw { status: 404, message: 'Token not found' };
+    const subscription = await getSubscriptionByValidToken(token)
     if (subscription.confirmed)
         return subscription;
 
@@ -43,15 +35,19 @@ async function confirmSubscription(token) {
 }
 
 async function unsubscribe(token) {
-    if (!token || !uuidValidate(token)) {
-        throw { status: 400, message: 'Invalid token' };
-    }
-
-    const sub = await repo.findByToken(token);
-    if (!sub)
-        throw { status: 404, message: 'Token not found' };
-
+    await getSubscriptionByValidToken(token)
     await repo.deleteByToken(token);
+}
+
+async function getSubscriptionByValidToken(token) {
+    if (!token || !uuidValidate(token))
+        throw { status: 400, message: 'Invalid token' }
+
+    const subscription = await repo.findByToken(token)
+    if (!subscription)
+        throw { status: 404, message: 'Token not found' }
+
+    return subscription
 }
 
 module.exports = {
