@@ -6,7 +6,4 @@ docker-compose up --build
 ```
 
 ## Environment variables
-WEATHER_API_KEY
-MONGO_URI
-EMAIL_USER
-EMAIL_PASS
+WEATHER_API_KEY, MONGO_URI, EMAIL_USER, EMAIL_PASS
