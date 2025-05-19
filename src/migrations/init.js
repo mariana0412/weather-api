@@ -1,5 +1,5 @@
 const mongoose = require('../config/db');
-const Subscription = require('../models/Subscription');
+const Subscription = require('../models/subscription');
 
 async function migrate() {
     try {
